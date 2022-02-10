@@ -45,7 +45,8 @@ ion-icon {
     font-size: 42px;
   }
 
-input{
+textarea{
+    margin-left: 17px;
     font-style: italic;
     font-weight: normal;
     font-size: 18px;
@@ -123,4 +124,24 @@ aside{
 .opcoes-visibilidade{
   margin-left:20px;
 }
+li{
+  border-radius: 2px;
+  min-height: 40px;
+  width: 100%;
+  margin-bottom: 4px;
+  padding-left: 8px;
+  padding-right: 9px;
+  background-color: #fff;
+  font-family: 'Roboto';
+  font-size: 24px;
+  display: flex;
+  align-items: center;
 
+}
+.horario{
+  color: #AAAAAA;
+}
+.nome-user, .paraquem{
+  font-family: bold;
+  font-weight: 700;
+}
