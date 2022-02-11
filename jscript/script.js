@@ -123,7 +123,7 @@ function enviarMensagem() {
 }
 
 function mensagemOK() {
-  setInterval(listarMensagem(),1000);
+  setInterval(listarMensagem(),3000);
 
 }
 
