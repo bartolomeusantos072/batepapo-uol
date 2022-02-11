@@ -131,7 +131,6 @@ li{
   margin-bottom: 4px;
   padding-left: 8px;
   padding-right: 9px;
-  background-color: #fff;
   font-family: 'Roboto';
   font-size: 24px;
   display: flex;
@@ -145,3 +144,14 @@ li{
   font-family: bold;
   font-weight: 700;
 }
+
+.status{
+  background: #DCDCDC;
+}
+.messagem{
+  background: #ffffff;
+}
+.private-mensagem{
+  background:#FFDEDE ;
+}
+
