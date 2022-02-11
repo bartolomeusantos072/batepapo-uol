@@ -36,6 +36,7 @@ div img, div input{
 }
 div ion-icon{
     margin-right: 22px;
+    cursor:pointer;
 }
 img{
     width: 75px;
@@ -53,15 +54,17 @@ textarea{
     line-height: 21px;
     color:black;
 }
-
+.ocultar{
+  display: none;
+}
 .sobreposicao {
   display: none;
-  position: absolute;
+  position: fixed;
   width: 100%;
   height: 100%;
   left: 0px;
   top: 0px;
-  z-index: 2;
+  z-index: 3;
   background: rgba(8, 8, 8, 0.76);
 }
 
