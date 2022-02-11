@@ -1,3 +1,5 @@
+let destinatario;
+
 function abrirMenu() {
   // document.classList.remove(".ocultar");
   contatos();
@@ -15,7 +17,7 @@ login();
 
 function login() {
   usuario = {
-    name: prompt("Qual o seu nome?")
+    name: prompt("Qual o seu lindo nome?")
   };
   const entrar = axios.post("https://mock-api.driven.com.br/api/v4/uol/participants", usuario)
     .then(loginOK)
@@ -121,12 +123,12 @@ function enviarMensagem() {
 }
 
 function mensagemOK() {
-  listarMensagem();
+  setInterval(listarMensagem(),1000);
+
 }
 
 function mensagemErro(erro) {
-  alert("Não foi possivel enviar a mensagem");
-  console.erro(erro);
+  window.location.reload();
 }
 
 
@@ -146,7 +148,7 @@ function renderizarContatos(pessoas) {
   for (let i = 0; i < pessoas.length; i++) {
 
     let montarContatos = `
-      <div class="person">
+      <div class="person" onclick="selecionarContato(this)">
         <span><ion-icon name="person-circle"></ion-icon></span>
         <div class="name">
            <span>${pessoas[i].name}</span>
@@ -163,4 +165,10 @@ function renderizarContatos(pessoas) {
     setInterval(estouOnline(), 5000);
 
   }
+}
+
+function selecionarContato(contato){
+  destinatario = document.querySelector(".name span").innerHTML;;
+  // console.log("Isso é:"+destinatario);
+  clicaSobreposicao();
 }
