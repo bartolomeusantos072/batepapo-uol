@@ -9,7 +9,7 @@ footer {
   height: 80px;
   background-color: #fff;
   z-index: 1;
-  display: flex;
+  display: none;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
@@ -63,10 +63,11 @@ textarea{
   left: 0px;
   top: 0px;
   z-index: 3;
-  background: rgba(8, 8, 8, 0.76);
+  background: rgba(8, 8, 8, 0.96);
 }
 
 aside{
+  position: fixed;
   width: 80%;
   height: 100%;
   background-color: #fff;
@@ -151,10 +152,57 @@ li{
 .status{
   background: #DCDCDC;
 }
-.messagem{
+.message{
   background: #ffffff;
 }
-.private-mensagem{
+.private_message{
   background:#FFDEDE ;
 }
 
+
+.tela-login {
+  position: fixed;
+  width: 100vw;
+  /* display: none; */
+  height: 100vh;
+  background-color: #fff;
+  z-index: 6;
+}
+.logo {
+  height: 30%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+.logo img {
+  height: 100px;
+  width: 150px;
+}
+.section-login {
+  height: 70%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+.login,
+.btn-login {
+  height: 47px;
+  border-radius: 3px;
+  border: 1px solid #ababab;
+  text-align: center;
+}
+.btn-login {
+  width: 111px;
+  border: 0;
+}
+.tela-carregando {
+  position: fixed;
+  z-index: 1;
+  width: 100vw;
+  height: 100vh;
+  background-color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

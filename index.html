@@ -11,11 +11,26 @@
     <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet'>
 </head>
 <body>
+    <div class="tela-login">
+        <div class="logo">
+          <img src="imagem/logo.png" />
+        </div>
+        <div class="section-login">
+          <input
+            id="nome"
+            class="login"
+            type="text"
+            placeholder="Digite seu nome"
+          /><br />
+          <button id="botao" class="btn-login" type="button">Entrar</button>
+        </div>
+      </div>
+      <div class="tela-carregando"><img src="imagem/carregando.gif" /></div>
+
     <header>
         <div><img src="imagem/logo.png"/> </div>
         <div ><ion-icon onclick="abrirMenu();"  name="people-sharp"></ion-icon></div>
     </header>
-
     <main>
         <section>
             <ul>
@@ -31,7 +46,8 @@
         
     </main>
 
-    <div class="sobreposicao ocultar" >
+    
+    <div class="sobreposicao ocultar">
         <aside>
             <div class="cabecalho">
                 <h2>Escolha um contato para enviar Mensagem</h2>
@@ -63,7 +79,6 @@
             </div>
         </aside>
     </div>
-
     <footer>
         <div><textarea type="text" placeholder="Escreva aqui..."></textarea></div>
         <div><ion-icon name="paper-plane-outline" onclick="enviarMensagem()"></ion-icon></div>

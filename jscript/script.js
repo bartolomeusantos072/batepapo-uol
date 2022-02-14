@@ -13,28 +13,37 @@ function clicaSobreposicao() {
 }
 
 let usuario;
-login();
-
-function login() {
+document.getElementById("botao").onclick = function login() {
+  nome = document.getElementById("nome").value;
   usuario = {
-    name: prompt("Qual o seu lindo nome?")
+    name: nome,
   };
-  const entrar = axios.post("https://mock-api.driven.com.br/api/v4/uol/participants", usuario)
-    .then(loginOK)
-    .catch(loginError);
-
-}
-
-function loginOK(response) {
-  alert("Entrada com sucesso");
-  listarMensagem();
-
-}
-
-function loginError(erro) {
-  alert("Este nome já esta sendo utilizado");
-  login();
-}
+ 
+  const entrar = axios
+    .get(
+      "https://mock-api.driven.com.br/api/v4/uol/participants",
+      usuario
+    )
+    .then(function (response) {
+      document.querySelector(".tela-login").style.display = "none";
+      setTimeout(function () {
+        document.querySelector(".tela-carregando").style.display = "none";
+        document.querySelector("header").style.display="flex";
+        document.querySelector("footer").style.display="flex";
+        listarMensagem();
+      }, 2000);
+      
+      
+      console.log(response);
+    })
+    .catch(function (error) {
+      alert(error);
+      alert("Este nome já esta sendo utilizado");
+      document.getElementById("nome").value="";
+      login();
+      
+    });
+};
 
 
 
@@ -67,7 +76,7 @@ function renderizarMensagens(mensagem) {
             <span>(${mensagem[i].time})</span><strong>${mensagem[i].from}</strong> para <strong>${mensagem[i].to}</strong>: ${mensagem[i].text}`
     }
 
-    if (mensagem[i].type == "private-mensagem") {
+    if (mensagem[i].type == "private_message") {
 
       montarTexto += `
             <span>(${mensagem[i].time})</span><strong>${mensagem[i].from}</strong> reservadamente para < strong > ${mensagem[i].to}</strong >: ${mensagem[i].text}`
@@ -79,7 +88,7 @@ function renderizarMensagens(mensagem) {
     const elementoQueQueroQueApareca = document.querySelector('ul').lastElementChild;
     elementoQueQueroQueApareca.scrollIntoView();
 
-    setInterval(estouOnline(), 5000);
+    // setInterval(estouOnline(), 5000);
     // setTimeout(function () {
     //   window.location.reload(1);
     // }, 3000);
