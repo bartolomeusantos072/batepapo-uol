@@ -45,19 +45,22 @@
         </section>
         
     </main>
-
+    <footer>
+        <div><textarea type="text" placeholder="Escreva aqui..."></textarea></div>
+        <div><ion-icon name="paper-plane-outline" onclick="enviarMensagem()"></ion-icon></div>
+    </footer>
     
-    <div class="sobreposicao ocultar">
+    <div class="sobreposicao" onclick="sobrePosicao()">
         <aside>
             <div class="cabecalho">
                 <h2>Escolha um contato para enviar Mensagem</h2>
             </div>
-            <div class="contatos">
-                <div onclick="selecionarContato(this)" class="person">
+            <ul class="contatos">
+                <li  class="person" onclick="selecionarContato(this)">
                     <span><ion-icon name="people"></ion-icon></span>
                     <span>Todos</span>
-                </div>
-            </div>
+                </li>
+            </ul>
             <div class="visibilidade">
                 <h2>Escolha a visibilidade</h2>
             </div>
@@ -79,10 +82,7 @@
             </div>
         </aside>
     </div>
-    <footer>
-        <div><textarea type="text" placeholder="Escreva aqui..."></textarea></div>
-        <div><ion-icon name="paper-plane-outline" onclick="enviarMensagem()"></ion-icon></div>
-    </footer>
+    
     
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 

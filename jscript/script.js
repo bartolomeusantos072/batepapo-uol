@@ -1,16 +1,5 @@
-let destinatario;
-
-function abrirMenu() {
-  // document.classList.remove(".ocultar");
-  contatos();
-  document.querySelector(".sobreposicao").style.display = "flex";
-
-
-}
-
-function clicaSobreposicao() {
-  document.querySelector(".sobreposicao").style.display = "none";
-}
+let destinatario = [];
+let montarContatos;
 
 let usuario;
 document.getElementById("botao").onclick = function login() {
@@ -18,47 +7,47 @@ document.getElementById("botao").onclick = function login() {
   usuario = {
     name: nome,
   };
- 
-  const entrar = axios
-    .get(
+
+  const logar = axios
+    .post(
       "https://mock-api.driven.com.br/api/v4/uol/participants",
-      usuario
+      { name: usuario.name }
     )
     .then(function (response) {
       document.querySelector(".tela-login").style.display = "none";
       setTimeout(function () {
         document.querySelector(".tela-carregando").style.display = "none";
-        document.querySelector("header").style.display="flex";
-        document.querySelector("footer").style.display="flex";
+        document.querySelector("header").style.display = "flex";
+        document.querySelector("footer").style.display = "flex";
         listarMensagem();
       }, 2000);
-      
-      
+
       console.log(response);
     })
     .catch(function (error) {
-      alert(error);
+      // alert(error);
       alert("Este nome já esta sendo utilizado");
-      document.getElementById("nome").value="";
-      login();
+      document.getElementById("nome").value = "";
       
+
+
+
     });
 };
 
 
 
 function listarMensagem() {
-  const promessa = axios.get("https://mock-api.driven.com.br/api/v4/uol/messages");
-  promessa.then(processarResposta);
-  promessa.catch(tratarErro);
+  const promessa = axios.get("https://mock-api.driven.com.br/api/v4/uol/messages",)
+    .then(function (response) {
+      const mensagem = response.data;
+      renderizarMensagens(mensagem);
+    })
+    .catch(function(error){
+      alert.error(error);
+    });
 }
 
-
-function processarResposta(response) {
-  const mensagem = response.data;
-  renderizarMensagens(mensagem);
-
-}
 
 function renderizarMensagens(mensagem) {
 
@@ -85,19 +74,18 @@ function renderizarMensagens(mensagem) {
 
     document.querySelector("ul").innerHTML += montarTexto;
 
+    setInterval(estouOnline(), 2000);
+
     const elementoQueQueroQueApareca = document.querySelector('ul').lastElementChild;
     elementoQueQueroQueApareca.scrollIntoView();
 
-    // setInterval(estouOnline(), 5000);
+    
     // setTimeout(function () {
     //   window.location.reload(1);
     // }, 3000);
 
   }
 
-}
-function tratarErro(erro) {
-  console.error(erro);
 }
 
 
@@ -132,7 +120,7 @@ function enviarMensagem() {
 }
 
 function mensagemOK() {
-  setInterval(listarMensagem(),3000);
+  setInterval(listarMensagem(), 3000);
 
 }
 
@@ -156,28 +144,48 @@ function listarContatos(response) {
 function renderizarContatos(pessoas) {
   for (let i = 0; i < pessoas.length; i++) {
 
-    let montarContatos = `
-      <div class="person" onclick="selecionarContato(this)">
+     montarContatos = `
+      <li class="person" onclick="selecionarContato(this)">
         <span><ion-icon name="person-circle"></ion-icon></span>
         <div class="name">
            <span>${pessoas[i].name}</span>
-           <span></span>
+           <!-- <span class="checkmark"><ion-icon name="checkmark-outline"></ion-icon></span> -->
         </div>
-      </div>
+      </li>
       `;
-
+    
     document.querySelector(".contatos").innerHTML += montarContatos;
+
+    setInterval(estouOnline(), 1000);
 
     const elementoQueQueroQueApareca = document.querySelector('.contatos').lastElementChild;
     elementoQueQueroQueApareca.scrollIntoView();
 
-    setInterval(estouOnline(), 5000);
+    
 
   }
 }
 
-function selecionarContato(contato){
-  destinatario = document.querySelector(".name span").innerHTML;;
-  // console.log("Isso é:"+destinatario);
-  clicaSobreposicao();
+function selecionarContato(pessoa) {
+
+      destinatario= pessoa.querySelector(".name span").innerHTML;
+      tipo = "private_message";
 }
+
+function abrirMenu() {
+  
+  contatos();
+
+  const sobreposicao = document.querySelector(".sobreposicao").style.display = "flex"; 
+  const menuContatos = document.querySelector("aside");
+
+  
+  menuContatos.addEventListener("click", function(e){
+    e.stopPropagation();
+  });
+}
+
+function sobrePosicao(){
+  document.querySelector(".sobreposicao").style.display="none";
+}
+
