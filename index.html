@@ -1,93 +1,106 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Bate-papo UOL</title>
-    <link rel="icon" type="imagem/png" href="https://bootcampra.notion.site/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2F2cbf4132-f060-45a8-8b45-846bc9b90025%2Flogo-uol-icon-512.png?table=block&id=d91dfeb7-727d-45f5-9b08-160d3da76bb5&spaceId=f797e032-5eb2-4c9d-beb7-cd7181e19e47&width=40&userId=&cache=v2" />
-    <link href="css/reset.css" rel="stylesheet">
-    <link href="css/style.css" rel="stylesheet">
-    <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet'>
-</head>
-<body>
+    <link
+      rel="icon"
+      type="image/png"
+      href="https://bootcampra.notion.site/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2F2cbf4132-f060-45a8-8b45-846bc9b90025%2Flogo-uol-icon-512.png?table=block&id=d91dfeb7-727d-45f5-9b08-160d3da76bb5&spaceId=f797e032-5eb2-4c9d-beb7-cd7181e19e47&width=40&userId=&cache=v2"
+    />
+    <link href="css/reset.css" rel="stylesheet" />
+    <link href="css/style.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" />
+  </head>
+  <body>
     <div class="tela-login">
-        <div class="logo">
-          <img src="imagem/logo.png" />
-        </div>
-        <div class="section-login">
-          <input
-            id="nome"
-            class="login"
-            type="text"
-            placeholder="Digite seu nome"
-          /><br />
-          <button id="botao" class="btn-login" type="button">Entrar</button>
-        </div>
+      <div class="logo">
+        <img src="imagem/logo.png" alt="Logo UOL" />
       </div>
-      <div class="tela-carregando"><img src="imagem/carregando.gif" /></div>
+      <div class="section-login">
+        <input
+          id="nome"
+          class="login"
+          type="text"
+          placeholder="Digite seu nome"
+          data-identifier="enter-name"
+        /><br />
+        <button id="botao" class="btn-login" type="button" data-identifier="start">Entrar</button>
+      </div>
+    </div>
+
+    <div class="tela-carregando"><img src="imagem/carregando.gif" alt="Carregando" /></div>
 
     <header>
-        <div><img src="imagem/logo.png"/> </div>
-        <div ><ion-icon onclick="abrirMenu();"  name="people-sharp"></ion-icon></div>
+      <div><img src="imagem/logo.png" alt="Logo" /></div>
+      <div><ion-icon onclick="abrirMenu();" name="people-sharp"></ion-icon></div>
     </header>
-    <main>
-        <section>
-            <ul>
-                <li>
-                    <span class="horario"></span>
-                    <span class="nome-user"></span>
-                    <span class="paraquem"></span>
-                    <span class="mensagem"></span>
-                </li>
-            </ul>
-            
-        </section>
-        
-    </main>
-    <footer>
-        <div><textarea type="text" placeholder="Escreva aqui..."></textarea></div>
-        <div><ion-icon name="paper-plane-outline" onclick="enviarMensagem()"></ion-icon></div>
-    </footer>
-    
-    <div class="sobreposicao" onclick="sobrePosicao()">
-        <aside>
-            <div class="cabecalho">
-                <h2>Escolha um contato para enviar Mensagem</h2>
-            </div>
-            <ul class="contatos">
-                <li  class="person" onclick="selecionarContato(this)">
-                    <span><ion-icon name="people"></ion-icon></span>
-                    <span>Todos</span>
-                </li>
-            </ul>
-            <div class="visibilidade">
-                <h2>Escolha a visibilidade</h2>
-            </div>
-            <div class="opcoes-visibilidade">
-                <div class="person">
-                    <span><ion-icon name="lock-open"></ion-icon></span>
-                    <div class="name">
-                        <span>Público</span>
-                        <span></span>
-                    </div>
-                </div>
-                <div class="person">
-                    <span><ion-icon name="lock-closed"></ion-icon></span>
-                    <div class="name">
-                        <span>Reservadamente</span>
-                        <span><ion-icon name="checkmark"></ion-icon></span>
-                    </div>
-                </div>
-            </div>
-        </aside>
-    </div>
-    
-    
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
+    <main>
+      <section>
+        <ul></ul>
+      </section>
+    </main>
+
+    <footer>
+      <div>
+        <textarea
+          type="text"
+          placeholder="Escreva aqui..."
+          data-identifier="message"
+        ></textarea>
+      </div>
+      <div>
+        <ion-icon
+          name="paper-plane-outline"
+          onclick="enviarMensagem()"
+          data-identifier="send-message"
+        ></ion-icon>
+      </div>
+      <div class="destinatario-info"></div>
+    </footer>
+
+    <div class="sobreposicao" onclick="sobrePosicao()">
+      <aside onclick="event.stopPropagation()">
+        <div class="cabecalho">
+          <h2>Escolha um contato para enviar mensagem</h2>
+        </div>
+        <ul class="contatos">
+          <li class="person" onclick="selecionarContato(this)" data-identifier="participant">
+            <span><ion-icon name="people"></ion-icon></span>
+            <div class="name">
+              <span>Todos</span>
+              <span class="checkmark"><ion-icon name="checkmark-outline"></ion-icon></span>
+            </div>
+          </li>
+        </ul>
+        <div class="visibilidade">
+          <h2>Escolha a visibilidade</h2>
+        </div>
+        <div class="opcoes-visibilidade">
+          <div class="person" onclick="selecionarVisibilidade(this)" data-identifier="visibility">
+            <span><ion-icon name="lock-open"></ion-icon></span>
+            <div class="name">
+              <span>Público</span>
+              <span class="checkmark"><ion-icon name="checkmark-outline"></ion-icon></span>
+            </div>
+          </div>
+          <div class="person" onclick="selecionarVisibilidade(this)" data-identifier="visibility">
+            <span><ion-icon name="lock-closed"></ion-icon></span>
+            <div class="name">
+              <span>Reservadamente</span>
+              <span class="checkmark"><ion-icon name="checkmark-outline"></ion-icon></span>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
     <script src="jscript/script.js"></script>
-</body>
+  </body>
 </html>
