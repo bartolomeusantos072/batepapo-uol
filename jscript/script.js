@@ -230,6 +230,34 @@ function fecharMenu() {
   document.querySelector(".sobreposicao").style.display = "none";
 }
 
+async function logout() {
+  try {
+    // Envia a requisição para a API informando que o usuário saiu
+    await fetch("https://mock-api.driven.com.br/api/v4/uol/status", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: usuario.name })
+    });
+
+    // Mostra novamente a tela de login e esconde o conteúdo do chat
+    document.querySelector(".tela-login").style.display = "flex";
+    document.querySelector("header").style.display = "none";
+    document.querySelector("footer").style.display = "none";
+    document.querySelector(".tela-carregando").style.display = "none";
+    document.querySelector(".tela-login").style.display = "flex";
+
+    // Limpar o estado do usuário
+    usuario = {};
+    destinatario = "Todos";
+    visibilidade = "message";
+
+    alert("Você saiu com sucesso.");
+  } catch (error) {
+    console.error("Erro ao tentar fazer logout:", error);
+    alert("Erro ao tentar sair. Tente novamente.");
+  }
+}
+
 window.addEventListener("load", () => {
   setTimeout(() => {
     document.querySelector(".tela-carregando").style.display = "none";
