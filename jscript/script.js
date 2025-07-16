@@ -2,29 +2,39 @@ let usuario = {};
 let destinatario = "Todos";
 let visibilidade = "message"; // ou "private_message"
 
-function entrarNaSala() {
+async function entrarNaSala() {
   const nome = document.getElementById("nome").value.trim();
   if (!nome) return;
 
   usuario.name = nome;
 
-  axios.post("https://mock-api.driven.com.br/api/v4/uol/participants", usuario)
-    .then(() => {
-      document.querySelector(".tela-login").style.display = "none";
-      document.querySelector(".tela-carregando").style.display = "flex";
+  try {
+    const response = await fetch("https://mock-api.driven.com.br/api/v4/uol/participants", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(usuario),
+    });
 
-      setTimeout(() => {
-        document.querySelector(".tela-carregando").style.display = "none";
-        document.querySelector("header").style.display = "flex";
-        document.querySelector("footer").style.display = "flex";
-
-        iniciarChat();
-      }, 2000);
-    })
-    .catch(() => {
+    if (!response.ok) {
       alert("Nome já em uso. Escolha outro.");
       document.getElementById("nome").value = "";
-    });
+      return;
+    }
+
+    document.querySelector(".tela-login").style.display = "none";
+    document.querySelector(".tela-carregando").style.display = "flex";
+
+    setTimeout(() => {
+      document.querySelector(".tela-carregando").style.display = "none";
+      document.querySelector("header").style.display = "flex";
+      document.querySelector("footer").style.display = "flex";
+
+      iniciarChat();
+    }, 2000);
+  } catch (error) {
+    alert("Erro na conexão. Tente novamente.");
+    console.error(error);
+  }
 }
 
 function iniciarChat() {
@@ -35,23 +45,39 @@ function iniciarChat() {
   setInterval(buscarParticipantes, 10000);
 }
 
-function manterConexao() {
-  axios.post("https://mock-api.driven.com.br/api/v4/uol/status", usuario);
+async function manterConexao() {
+  try {
+    await fetch("https://mock-api.driven.com.br/api/v4/uol/status", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(usuario),
+    });
+  } catch (error) {
+    console.error("Erro ao manter conexão:", error);
+    // Se der erro, poderia recarregar a página para reconectar
+    window.location.reload();
+  }
 }
 
-function listarMensagens() {
-  axios.get("https://mock-api.driven.com.br/api/v4/uol/messages")
-    .then(response => renderizarMensagens(response.data));
+async function listarMensagens() {
+  try {
+    const response = await fetch("https://mock-api.driven.com.br/api/v4/uol/messages");
+    const mensagens = await response.json();
+    renderizarMensagens(mensagens);
+  } catch (error) {
+    console.error("Erro ao listar mensagens:", error);
+  }
 }
 
 function renderizarMensagens(mensagens) {
+  console.log(mensagens)
   const ul = document.querySelector("ul");
   ul.innerHTML = "";
 
   mensagens.forEach(m => {
     if (m.type === "private_message" && m.to !== usuario.name && m.from !== usuario.name) return;
 
-    let classe = m.type;
+    let classe= m.type.toLowerCase();
     let conteudo = "";
 
     if (classe === "status") {
@@ -71,7 +97,7 @@ function renderizarMensagens(mensagens) {
   ul.lastElementChild?.scrollIntoView();
 }
 
-function enviarMensagem() {
+async function enviarMensagem() {
   const input = document.querySelector("textarea");
   const texto = input.value.trim();
   if (!texto) return;
@@ -80,19 +106,37 @@ function enviarMensagem() {
     from: usuario.name,
     to: destinatario,
     text: texto,
-    type: visibilidade
+    type: visibilidade,
   };
 
-  axios.post("https://mock-api.driven.com.br/api/v4/uol/messages", mensagem)
-    .then(listarMensagens)
-    .catch(() => window.location.reload());
+  try {
+    const response = await fetch("https://mock-api.driven.com.br/api/v4/uol/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(mensagem),
+    });
 
-  input.value = "";
+    if (!response.ok) {
+      window.location.reload();
+      return;
+    }
+
+    listarMensagens();
+    input.value = "";
+  } catch (error) {
+    console.error("Erro ao enviar mensagem:", error);
+    window.location.reload();
+  }
 }
 
-function buscarParticipantes() {
-  axios.get("https://mock-api.driven.com.br/api/v4/uol/participants")
-    .then(response => renderizarContatos(response.data));
+async function buscarParticipantes() {
+  try {
+    const response = await fetch("https://mock-api.driven.com.br/api/v4/uol/participants");
+    const lista = await response.json();
+    renderizarContatos(lista);
+  } catch (error) {
+    console.error("Erro ao buscar participantes:", error);
+  }
 }
 
 function renderizarContatos(lista) {
@@ -106,8 +150,7 @@ function renderizarContatos(lista) {
         <span>Todos</span>
         <span class="checkmark"><ion-icon name="checkmark-outline"></ion-icon></span>
       </div>
-    </li>
-  `;
+    </li>`;
   ul.innerHTML = todos;
 
   lista.forEach(p => {
@@ -119,8 +162,7 @@ function renderizarContatos(lista) {
             <span>${p.name}</span>
             <span class="checkmark"><ion-icon name="checkmark-outline"></ion-icon></span>
           </div>
-        </li>
-      `;
+        </li>`;
     }
   });
 
@@ -161,6 +203,14 @@ function abrirMenu() {
 function sobrePosicao() {
   document.querySelector(".sobreposicao").style.display = "none";
 }
+
+// Quando o HTML for carregado, esconde a tela de carregamento e mostra a tela de login
+window.addEventListener("load", () => {
+  setTimeout(() => {
+    document.querySelector(".tela-carregando").style.display = "none";
+    document.querySelector(".tela-login").style.display = "flex";
+  }, 1000);
+});
 
 // Atalho: enviar com Enter
 document.addEventListener("DOMContentLoaded", () => {
