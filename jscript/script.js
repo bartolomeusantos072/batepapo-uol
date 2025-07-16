@@ -18,6 +18,7 @@ async function entrarNaSala() {
     if (!response.ok) {
       alert("Nome já em uso. Escolha outro.");
       document.getElementById("nome").value = "";
+      document.getElementById("nome").focus();  // Colocar foco no campo
       return;
     }
 
@@ -41,7 +42,7 @@ function iniciarChat() {
   listarMensagens();
   buscarParticipantes();
   setInterval(listarMensagens, 3000);
-  setInterval(manterConexao, 5000);
+  setInterval(manterConexao, 15000);
   setInterval(buscarParticipantes, 10000);
 }
 
@@ -168,11 +169,30 @@ function renderizarContatos(lista) {
 
   atualizarCheckmarks(".contatos .person", destinatario);
 }
-
+/*
 function selecionarContato(elemento) {
   destinatario = elemento.querySelector(".name span").innerText;
   atualizarCheckmarks(".contatos .person", destinatario);
   atualizarDestinatarioTexto();
+}
+*/
+function selecionarContato(elemento) {
+  destinatario = elemento.querySelector(".name span").innerText;  // Atualiza o destinatário
+  atualizarCheckmarks(".contatos .person", destinatario);  // Marca o destinatário
+  atualizarDestinatarioTexto();  // Atualiza o texto do destinatário na tela
+
+  // Fechar a sobreposição com o menu de contatos
+  sobrePosicao();  // Chama a função para esconder a sobreposição
+  
+  // Opcional: Rolar até o final da lista de mensagens no chat
+  setTimeout(() => {
+    const ul = document.querySelector("ul");
+    ul.lastElementChild?.scrollIntoView();  // Rola até a última mensagem (se necessário)
+  }, 100);
+}
+
+function sobrePosicao() {
+  document.querySelector(".sobreposicao").style.display = "none";  // Fecha o menu de contatos
 }
 
 function selecionarVisibilidade(elemento) {
