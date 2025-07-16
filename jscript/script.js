@@ -1,191 +1,158 @@
-let destinatario = [];
-let montarContatos;
+// Variáveis principais
+let usuario = {};
+let mensagens = [];
+let destinatario = "Todos";
+let visibilidade = "message";
 
-let usuario;
-document.getElementById("botao").onclick = function login() {
-  nome = document.getElementById("nome").value;
-  usuario = {
-    name: nome,
-  };
+// Entrar no chat
+document.getElementById("botao").onclick = function () {
+  const nome = document.getElementById("nome").value.trim();
+  if (!nome) return alert("Digite um nome válido.");
 
-  const logar = axios
-    .post(
-      "https://mock-api.driven.com.br/api/v4/uol/participants",
-      { name: usuario.name }
-    )
-    .then(function (response) {
+  usuario.name = nome;
+
+  axios
+    .post("https://mock-api.driven.com.br/api/v4/uol/participants", usuario)
+    .then(() => {
       document.querySelector(".tela-login").style.display = "none";
-      setTimeout(function () {
+      document.querySelector(".tela-carregando").style.display = "flex";
+
+      setTimeout(() => {
         document.querySelector(".tela-carregando").style.display = "none";
         document.querySelector("header").style.display = "flex";
         document.querySelector("footer").style.display = "flex";
-        listarMensagem();
+        iniciarChat();
       }, 2000);
-
-      console.log(response);
     })
-    .catch(function (error) {
-      // alert(error);
-      alert("Este nome já esta sendo utilizado");
+    .catch(() => {
+      alert("Este nome já está em uso. Tente outro.");
       document.getElementById("nome").value = "";
-      
-
-
-
     });
 };
 
+function iniciarChat() {
+  listarMensagens();
+  listarContatos();
+  setInterval(() => axios.post("https://mock-api.driven.com.br/api/v4/uol/status", usuario), 5000);
+  setInterval(listarMensagens, 3000);
+  setInterval(listarContatos, 10000);
+}
 
-
-function listarMensagem() {
-  const promessa = axios.get("https://mock-api.driven.com.br/api/v4/uol/messages",)
-    .then(function (response) {
-      const mensagem = response.data;
-      renderizarMensagens(mensagem);
-    })
-    .catch(function(error){
-      alert.error(error);
+// Listar mensagens
+function listarMensagens() {
+  axios
+    .get("https://mock-api.driven.com.br/api/v4/uol/messages")
+    .then((res) => {
+      mensagens = res.data;
+      renderizarMensagens();
     });
 }
 
+function renderizarMensagens() {
+  const ul = document.querySelector("ul");
+  ul.innerHTML = "";
 
-function renderizarMensagens(mensagem) {
+  mensagens.forEach((msg) => {
+    if (msg.type === "private_message" && msg.to !== usuario.name && msg.from !== usuario.name) return;
 
-  for (let i = 0; i < mensagem.length; i++) {
+    ul.innerHTML += `
+      <li class="${msg.type}" data-identifier="message">
+        <p><span>(${msg.time})</span> <strong>${msg.from}</strong> para <strong>${msg.to}</strong>: ${msg.text}</p>
+      </li>
+    `;
+  });
 
-    let montarTexto = `<li class=${mensagem[i].type}> <p>`
-    if (mensagem[i].type == "status") {
-      montarTexto += `
-            <span>(${mensagem[i].time})</span><strong>${mensagem[i].from}</strong> ${mensagem[i].text}`
-
-    }
-
-    if (mensagem[i].type == "message") {
-      montarTexto += `
-            <span>(${mensagem[i].time})</span><strong>${mensagem[i].from}</strong> para <strong>${mensagem[i].to}</strong>: ${mensagem[i].text}`
-    }
-
-    if (mensagem[i].type == "private_message") {
-
-      montarTexto += `
-            <span>(${mensagem[i].time})</span><strong>${mensagem[i].from}</strong> reservadamente para < strong > ${mensagem[i].to}</strong >: ${mensagem[i].text}`
-    }
-    montarTexto += `</p ></li > `;
-
-    document.querySelector("ul").innerHTML += montarTexto;
-
-    setInterval(estouOnline(), 2000);
-
-    const elementoQueQueroQueApareca = document.querySelector('ul').lastElementChild;
-    elementoQueQueroQueApareca.scrollIntoView();
-
-    
-    // setTimeout(function () {
-    //   window.location.reload(1);
-    // }, 3000);
-
-  }
-
+  ul.lastElementChild?.scrollIntoView();
 }
 
-
-//avisar que estou online
-
-function estouOnline() {
-  const online = axios.post("https://mock-api.driven.com.br/api/v4/uol/status", usuario);
-}
-
-
-//enviar mensagem
-
-
+// Enviar mensagem
 function enviarMensagem() {
-  let texto = document.querySelector("textarea").value;
-  if (texto) {
-    const mensagem = {
-      from: usuario.name,
-      to: 'Todos',
-      text: texto,
-      type: "message",
-    };
-    // console.log(mensagem);
-    const chat = axios.post("https://mock-api.driven.com.br/api/v4/uol/messages", mensagem)
-    chat.then(mensagemOK);
-    chat.catch(mensagemErro);
+  const texto = document.querySelector("textarea").value.trim();
+  if (!texto) return;
 
-  } else {
-    alert("Você não escreveu nenhuma mensagem");
-  }
+  const msg = {
+    from: usuario.name,
+    to: destinatario,
+    text: texto,
+    type: visibilidade,
+  };
+
+  axios
+    .post("https://mock-api.driven.com.br/api/v4/uol/messages", msg)
+    .then(listarMensagens)
+    .catch(() => window.location.reload());
+
   document.querySelector("textarea").value = "";
 }
 
-function mensagemOK() {
-  setInterval(listarMensagem(), 3000);
-
+// Participantes
+function listarContatos() {
+  axios.get("https://mock-api.driven.com.br/api/v4/uol/participants").then(renderizarContatos);
 }
 
-function mensagemErro(erro) {
-  window.location.reload();
-}
+function renderizarContatos(res) {
+  const lista = document.querySelector(".contatos");
+  const contatos = res.data;
+  lista.innerHTML = "";
 
+  lista.innerHTML += `
+    <li class="person" onclick="selecionarContato(this)" data-identifier="participant">
+      <span><ion-icon name="people"></ion-icon></span>
+      <div class="name">
+        <span>Todos</span>
+        <span class="checkmark">${destinatario === "Todos" ? "<ion-icon name='checkmark-outline'></ion-icon>" : ""}</span>
+      </div>
+    </li>
+  `;
 
-
-function contatos() {
-  const participante = axios.get("https://mock-api.driven.com.br/api/v4/uol/participants");
-  // participante.then(listarParticipantes); 
-  participante.then(listarContatos);
-}
-
-function listarContatos(response) {
-  const pessoas = response.data;
-  renderizarContatos(pessoas);
-}
-
-function renderizarContatos(pessoas) {
-  for (let i = 0; i < pessoas.length; i++) {
-
-     montarContatos = `
-      <li class="person" onclick="selecionarContato(this)">
+  contatos.forEach((c) => {
+    if (c.name === usuario.name) return;
+    lista.innerHTML += `
+      <li class="person" onclick="selecionarContato(this)" data-identifier="participant">
         <span><ion-icon name="person-circle"></ion-icon></span>
         <div class="name">
-           <span>${pessoas[i].name}</span>
-           <!-- <span class="checkmark"><ion-icon name="checkmark-outline"></ion-icon></span> -->
+          <span>${c.name}</span>
+          <span class="checkmark">${destinatario === c.name ? "<ion-icon name='checkmark-outline'></ion-icon>" : ""}</span>
         </div>
       </li>
-      `;
-    
-    document.querySelector(".contatos").innerHTML += montarContatos;
-
-    setInterval(estouOnline(), 1000);
-
-    const elementoQueQueroQueApareca = document.querySelector('.contatos').lastElementChild;
-    elementoQueQueroQueApareca.scrollIntoView();
-
-    
-
-  }
-}
-
-function selecionarContato(pessoa) {
-
-      destinatario= pessoa.querySelector(".name span").innerHTML;
-      tipo = "private_message";
-}
-
-function abrirMenu() {
-  
-  contatos();
-
-  const sobreposicao = document.querySelector(".sobreposicao").style.display = "flex"; 
-  const menuContatos = document.querySelector("aside");
-
-  
-  menuContatos.addEventListener("click", function(e){
-    e.stopPropagation();
+    `;
   });
 }
 
-function sobrePosicao(){
-  document.querySelector(".sobreposicao").style.display="none";
+function selecionarContato(el) {
+  destinatario = el.querySelector(".name span").innerText;
+  renderizarContatos({ data: [...mensagens.map(m => ({ name: m.from }))] });
+  atualizarDestinatarioInfo();
 }
 
+function selecionarVisibilidade(el) {
+  const tipo = el.innerText.includes("Reservadamente") ? "private_message" : "message";
+  visibilidade = tipo;
+
+  document.querySelectorAll("[data-identifier='visibility'] .checkmark").forEach(el => el.innerHTML = "");
+  el.querySelector(".checkmark").innerHTML = "<ion-icon name='checkmark-outline'></ion-icon>";
+
+  atualizarDestinatarioInfo();
+}
+
+function atualizarDestinatarioInfo() {
+  const info = document.querySelector(".destinatario-info");
+  info.innerText = `Enviando para ${destinatario} (${visibilidade === "private_message" ? "reservadamente" : "público"})`;
+}
+
+function abrirMenu() {
+  document.querySelector(".sobreposicao").style.display = "flex";
+  listarContatos();
+}
+
+function sobrePosicao() {
+  document.querySelector(".sobreposicao").style.display = "none";
+}
+
+// Enviar com Enter
+document.querySelector("textarea").addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    enviarMensagem();
+  }
+});
