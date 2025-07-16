@@ -13,23 +13,28 @@
 </head>
 
 <body>
-  <div class="tela-login">
-    <div class="logo">
+  <section class="tela-login">
+    <header class="logo">
       <img src="imagem/logo.png" alt="Logo UOL" />
-    </div>
-    <div class="section-login">
-      <input id="nome" class="login" type="text" placeholder="Digite seu nome" data-identifier="enter-name" /><br />
+    </header>
+    <section class="section-login">
+      <label for="nome" class="visually-hidden">Digite seu nome</label>
+      <input id="nome" class="login" type="text" placeholder="Digite seu nome" data-identifier="enter-name" />
       <button id="botao" class="btn-login" type="button" data-identifier="start">Entrar</button>
-    </div>
-  </div>
+    </section>
+  </section>
 
-  <div class="tela-carregando"><img src="imagem/carregando.gif" alt="Carregando" /></div>
+  <div class="tela-carregando">
+    <img src="imagem/carregando.gif" alt="Carregando" />
+  </div>
 
   <header>
     <figure>
       <img src="imagem/logo.png" alt="Logo" />
     </figure>
-    <div><ion-icon onclick="abrirMenu();" name="people-sharp"></ion-icon></div>
+    <button onclick="abrirMenu();" aria-label="Abrir menu de contatos">
+      <ion-icon name="people-sharp"></ion-icon>
+    </button>
   </header>
 
   <main>
@@ -39,20 +44,20 @@
   </main>
 
   <footer>
-    
-      <textarea placeholder="Escreva aqui..." data-identifier="message"></textarea>
-    
+    <textarea placeholder="Escreva aqui..." data-identifier="message"></textarea>
     <div>
-      <ion-icon name="paper-plane-outline" onclick="enviarMensagem()" data-identifier="send-message"></ion-icon>
+      <button onclick="enviarMensagem()" aria-label="Enviar mensagem">
+        <ion-icon name="paper-plane-outline" data-identifier="send-message"></ion-icon>
+      </button>
     </div>
     <div class="destinatario-info"></div>
   </footer>
 
   <div class="sobreposicao" onclick="sobrePosicao()">
     <aside onclick="event.stopPropagation()">
-      <div class="cabecalho">
+      <header class="cabecalho">
         <h2>Escolha um contato para enviar mensagem</h2>
-      </div>
+      </header>
       <ul class="contatos">
         <li class="person" onclick="selecionarContato(this)" data-identifier="participant">
           <span><ion-icon name="people"></ion-icon></span>
@@ -62,10 +67,10 @@
           </div>
         </li>
       </ul>
-      <div class="visibilidade">
+      <section class="visibilidade">
         <h2>Escolha a visibilidade</h2>
-      </div>
-      <div class="opcoes-visibilidade">
+      </section>
+      <section class="opcoes-visibilidade">
         <div class="person" onclick="selecionarVisibilidade(this)" data-identifier="visibility">
           <span><ion-icon name="lock-open"></ion-icon></span>
           <div class="name">
@@ -80,11 +85,11 @@
             <span class="checkmark"><ion-icon name="checkmark-outline"></ion-icon></span>
           </div>
         </div>
-      </div>
+      </section>
     </aside>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  
   <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
   <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
   <script src="jscript/script.js"></script>
