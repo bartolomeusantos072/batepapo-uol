@@ -1,18 +1,14 @@
-// Variáveis principais
 let usuario = {};
-let mensagens = [];
 let destinatario = "Todos";
-let visibilidade = "message";
+let visibilidade = "message"; // ou "private_message"
 
-// Entrar no chat
-document.getElementById("botao").onclick = function () {
+function entrarNaSala() {
   const nome = document.getElementById("nome").value.trim();
-  if (!nome) return alert("Digite um nome válido.");
+  if (!nome) return;
 
   usuario.name = nome;
 
-  axios
-    .post("https://mock-api.driven.com.br/api/v4/uol/participants", usuario)
+  axios.post("https://mock-api.driven.com.br/api/v4/uol/participants", usuario)
     .then(() => {
       document.querySelector(".tela-login").style.display = "none";
       document.querySelector(".tela-carregando").style.display = "flex";
@@ -21,138 +17,158 @@ document.getElementById("botao").onclick = function () {
         document.querySelector(".tela-carregando").style.display = "none";
         document.querySelector("header").style.display = "flex";
         document.querySelector("footer").style.display = "flex";
+
         iniciarChat();
       }, 2000);
     })
     .catch(() => {
-      alert("Este nome já está em uso. Tente outro.");
+      alert("Nome já em uso. Escolha outro.");
       document.getElementById("nome").value = "";
     });
-};
+}
 
 function iniciarChat() {
   listarMensagens();
-  listarContatos();
-  setInterval(() => axios.post("https://mock-api.driven.com.br/api/v4/uol/status", usuario), 5000);
+  buscarParticipantes();
   setInterval(listarMensagens, 3000);
-  setInterval(listarContatos, 10000);
+  setInterval(manterConexao, 5000);
+  setInterval(buscarParticipantes, 10000);
 }
 
-// Listar mensagens
+function manterConexao() {
+  axios.post("https://mock-api.driven.com.br/api/v4/uol/status", usuario);
+}
+
 function listarMensagens() {
-  axios
-    .get("https://mock-api.driven.com.br/api/v4/uol/messages")
-    .then((res) => {
-      mensagens = res.data;
-      renderizarMensagens();
-    });
+  axios.get("https://mock-api.driven.com.br/api/v4/uol/messages")
+    .then(response => renderizarMensagens(response.data));
 }
 
-function renderizarMensagens() {
+function renderizarMensagens(mensagens) {
   const ul = document.querySelector("ul");
   ul.innerHTML = "";
 
-  mensagens.forEach((msg) => {
-    if (msg.type === "private_message" && msg.to !== usuario.name && msg.from !== usuario.name) return;
+  mensagens.forEach(m => {
+    if (m.type === "private_message" && m.to !== usuario.name && m.from !== usuario.name) return;
+
+    let classe = m.type;
+    let conteudo = "";
+
+    if (classe === "status") {
+      conteudo = `<strong>${m.from}</strong> ${m.text}`;
+    } else if (classe === "message") {
+      conteudo = `<strong>${m.from}</strong> para <strong>${m.to}</strong>: ${m.text}`;
+    } else {
+      conteudo = `<strong>${m.from}</strong> reservadamente para <strong>${m.to}</strong>: ${m.text}`;
+    }
 
     ul.innerHTML += `
-      <li class="${msg.type}" data-identifier="message">
-        <p><span>(${msg.time})</span> <strong>${msg.from}</strong> para <strong>${msg.to}</strong>: ${msg.text}</p>
-      </li>
-    `;
+      <li class="${classe}" data-identifier="message">
+        <p><span class="horario">(${m.time})</span> ${conteudo}</p>
+      </li>`;
   });
 
   ul.lastElementChild?.scrollIntoView();
 }
 
-// Enviar mensagem
 function enviarMensagem() {
-  const texto = document.querySelector("textarea").value.trim();
+  const input = document.querySelector("textarea");
+  const texto = input.value.trim();
   if (!texto) return;
 
-  const msg = {
+  const mensagem = {
     from: usuario.name,
     to: destinatario,
     text: texto,
-    type: visibilidade,
+    type: visibilidade
   };
 
-  axios
-    .post("https://mock-api.driven.com.br/api/v4/uol/messages", msg)
+  axios.post("https://mock-api.driven.com.br/api/v4/uol/messages", mensagem)
     .then(listarMensagens)
     .catch(() => window.location.reload());
 
-  document.querySelector("textarea").value = "";
+  input.value = "";
 }
 
-// Participantes
-function listarContatos() {
-  axios.get("https://mock-api.driven.com.br/api/v4/uol/participants").then(renderizarContatos);
+function buscarParticipantes() {
+  axios.get("https://mock-api.driven.com.br/api/v4/uol/participants")
+    .then(response => renderizarContatos(response.data));
 }
 
-function renderizarContatos(res) {
-  const lista = document.querySelector(".contatos");
-  const contatos = res.data;
-  lista.innerHTML = "";
+function renderizarContatos(lista) {
+  const ul = document.querySelector(".contatos");
+  ul.innerHTML = "";
 
-  lista.innerHTML += `
+  const todos = `
     <li class="person" onclick="selecionarContato(this)" data-identifier="participant">
       <span><ion-icon name="people"></ion-icon></span>
       <div class="name">
         <span>Todos</span>
-        <span class="checkmark">${destinatario === "Todos" ? "<ion-icon name='checkmark-outline'></ion-icon>" : ""}</span>
+        <span class="checkmark"><ion-icon name="checkmark-outline"></ion-icon></span>
       </div>
     </li>
   `;
+  ul.innerHTML = todos;
 
-  contatos.forEach((c) => {
-    if (c.name === usuario.name) return;
-    lista.innerHTML += `
-      <li class="person" onclick="selecionarContato(this)" data-identifier="participant">
-        <span><ion-icon name="person-circle"></ion-icon></span>
-        <div class="name">
-          <span>${c.name}</span>
-          <span class="checkmark">${destinatario === c.name ? "<ion-icon name='checkmark-outline'></ion-icon>" : ""}</span>
-        </div>
-      </li>
-    `;
+  lista.forEach(p => {
+    if (p.name !== "Todos") {
+      ul.innerHTML += `
+        <li class="person" onclick="selecionarContato(this)" data-identifier="participant">
+          <span><ion-icon name="person-circle"></ion-icon></span>
+          <div class="name">
+            <span>${p.name}</span>
+            <span class="checkmark"><ion-icon name="checkmark-outline"></ion-icon></span>
+          </div>
+        </li>
+      `;
+    }
+  });
+
+  atualizarCheckmarks(".contatos .person", destinatario);
+}
+
+function selecionarContato(elemento) {
+  destinatario = elemento.querySelector(".name span").innerText;
+  atualizarCheckmarks(".contatos .person", destinatario);
+  atualizarDestinatarioTexto();
+}
+
+function selecionarVisibilidade(elemento) {
+  const texto = elemento.querySelector(".name span").innerText;
+  visibilidade = texto === "Reservadamente" ? "private_message" : "message";
+  atualizarCheckmarks(".opcoes-visibilidade .person", texto);
+  atualizarDestinatarioTexto();
+}
+
+function atualizarCheckmarks(selector, nome) {
+  document.querySelectorAll(selector).forEach(el => {
+    const check = el.querySelector(".checkmark");
+    const nomeItem = el.querySelector(".name span").innerText;
+    check.style.display = nomeItem === nome ? "inline" : "none";
   });
 }
 
-function selecionarContato(el) {
-  destinatario = el.querySelector(".name span").innerText;
-  renderizarContatos({ data: [...mensagens.map(m => ({ name: m.from }))] });
-  atualizarDestinatarioInfo();
-}
-
-function selecionarVisibilidade(el) {
-  const tipo = el.innerText.includes("Reservadamente") ? "private_message" : "message";
-  visibilidade = tipo;
-
-  document.querySelectorAll("[data-identifier='visibility'] .checkmark").forEach(el => el.innerHTML = "");
-  el.querySelector(".checkmark").innerHTML = "<ion-icon name='checkmark-outline'></ion-icon>";
-
-  atualizarDestinatarioInfo();
-}
-
-function atualizarDestinatarioInfo() {
-  const info = document.querySelector(".destinatario-info");
-  info.innerText = `Enviando para ${destinatario} (${visibilidade === "private_message" ? "reservadamente" : "público"})`;
+function atualizarDestinatarioTexto() {
+  const priv = visibilidade === "private_message" ? " (reservadamente)" : "";
+  document.querySelector(".destinatario-info").innerText = `Enviando para ${destinatario}${priv}`;
 }
 
 function abrirMenu() {
   document.querySelector(".sobreposicao").style.display = "flex";
-  listarContatos();
+  buscarParticipantes();
 }
 
 function sobrePosicao() {
   document.querySelector(".sobreposicao").style.display = "none";
 }
 
-// Enviar com Enter
-document.querySelector("textarea").addEventListener("keydown", (e) => {
-  if (e.key === "Enter") {
-    e.preventDefault();
-    enviarMensagem();
-  }
+// Atalho: enviar com Enter
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("botao").addEventListener("click", entrarNaSala);
+  document.querySelector("textarea").addEventListener("keydown", e => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      enviarMensagem();
+    }
+  });
 });
