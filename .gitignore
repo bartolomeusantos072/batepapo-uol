@@ -1,2 +1,2 @@
- LOGIN-GIT-COM-TOKEN.bat
- limpar-configuracoes-git.bat
+ ./LOGIN-GIT-COM-TOKEN.bat
+ ./limpar-configuracoes-git.bat
