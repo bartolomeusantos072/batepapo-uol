@@ -177,7 +177,7 @@ function exibirContatos(lista) {
 
 function selecionarContato(elemento) {
   const nomeSelecionado = elemento.querySelector(".name span").innerText;
-  
+
   // Impede que o usuário selecione a si mesmo
   if (nomeSelecionado === usuario.name) {
     alert("Você não pode enviar mensagens privadas para si mesmo.");
@@ -189,7 +189,7 @@ function selecionarContato(elemento) {
   atualizarTextoDestinatario();
 
   fecharMenuDeContatos();
-  
+
   setTimeout(() => {
     const listaMensagens = document.querySelector("ul");
     listaMensagens.lastElementChild?.scrollIntoView();
@@ -221,14 +221,19 @@ function atualizarTextoDestinatario() {
   document.querySelector(".destinatario-info").innerText = `Enviando para ${destinatario}${priv}`;
 }
 
-function abrirMenu() {
-  document.querySelector(".sobreposicao").style.display = "flex";
-  atualizarParticipantes();
+function toggleMenu() {
+  const sobreposicao = document.querySelector(".sobreposicao");
+
+  if (sobreposicao.style.display === "flex") {
+    // Se já estiver visível, fecha
+    sobreposicao.style.display = "none";
+  } else {
+    // Se estiver escondido, abre
+    sobreposicao.style.display = "flex";
+    atualizarParticipantes(); // Chama sua função original
+  }
 }
 
-function fecharMenu() {
-  document.querySelector(".sobreposicao").style.display = "none";
-}
 
 async function logout() {
   try {
@@ -252,6 +257,9 @@ async function logout() {
     visibilidade = "message";
 
     alert("Você saiu com sucesso.");
+    setTimeout(() => {
+      window.location.reload();
+    }, 500);
   } catch (error) {
     console.error("Erro ao tentar fazer logout:", error);
     alert("Erro ao tentar sair. Tente novamente.");
